@@ -23,10 +23,11 @@ const palette = ['#dd5635', '#5a50c8', '#1a8c72', '#e5a13a', '#2e5bbd']
 
 export const defaultComposition: Composition = {
   version: 1,
-  tempo: 56,
+  tempo: 110,
   strokes: [
-    { color: '#e34f3f', points: [{ x: 0.12, y: 0.58 }, { x: 0.29, y: 0.51 }, { x: 0.45, y: 0.56 }, { x: 0.62, y: 0.44 }, { x: 0.78, y: 0.49 }] },
-    { color: '#5c50d7', points: [{ x: 0.2, y: 0.34 }, { x: 0.37, y: 0.29 }, { x: 0.53, y: 0.34 }, { x: 0.7, y: 0.26 }] },
+    { color: '#e34f3f', points: [{ x: 0.1, y: 0.58 }, { x: 0.22, y: 0.48 }, { x: 0.34, y: 0.4 }, { x: 0.46, y: 0.45 }, { x: 0.58, y: 0.32 }, { x: 0.7, y: 0.38 }, { x: 0.82, y: 0.24 }, { x: 0.9, y: 0.3 }] },
+    { color: '#5c50d7', points: [{ x: 0.16, y: 0.72 }, { x: 0.3, y: 0.67 }, { x: 0.44, y: 0.72 }, { x: 0.58, y: 0.63 }, { x: 0.74, y: 0.68 }] },
+    { color: '#1a8c72', points: [{ x: 0.27, y: 0.26 }, { x: 0.41, y: 0.21 }, { x: 0.55, y: 0.26 }, { x: 0.69, y: 0.19 }, { x: 0.83, y: 0.23 }] },
   ],
 }
 
@@ -50,7 +51,7 @@ function sanitizeComposition(value: unknown): Composition | null {
     })
     return points.length > 1 ? [{ color, points }] : []
   })
-  return { version: 1, tempo: clamp(typeof candidate.tempo === 'number' ? candidate.tempo : 56, 40, 120), strokes }
+  return { version: 1, tempo: clamp(typeof candidate.tempo === 'number' ? candidate.tempo : 110, 50, 180), strokes }
 }
 
 export function encodeComposition(composition: Composition) {

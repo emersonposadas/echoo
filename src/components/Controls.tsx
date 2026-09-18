@@ -20,7 +20,7 @@ export default function Controls({ playing, tempo, color, onToggle, onUndo, onCl
         <button className="round-button" onClick={onUndo} aria-label="Undo last stroke">↶</button>
         <button className="round-button" onClick={onClear} aria-label="Clear drawing">×</button>
         <button className="share-button" onClick={onShare} aria-label="Share composition"><span aria-hidden="true">↗</span> Share</button>
-        <label className="tempo-control">tempo <input type="range" min="40" max="120" value={tempo} onChange={(event) => onTempo(Number(event.target.value))} /><strong>{tempo}</strong></label>
+        <label className="tempo-control">tempo <input type="range" min="50" max="180" value={tempo} onChange={(event) => onTempo(Number(event.target.value))} /><strong>{tempo}</strong></label>
       </div>
       <div className="control-row palette" aria-label="Ink colors">
         {colors.map((item) => <button key={item} className={`color-dot ${item === color ? 'selected' : ''}`} style={{ backgroundColor: item }} onClick={() => onColor(item)} aria-label={`Use ${item} ink`} />)}
