@@ -76,7 +76,9 @@ export default function DrawingCanvas({ strokes, playhead, hits, onStroke, color
 
   const pointFromEvent = (event: PointerEvent<HTMLCanvasElement>): Point => {
     const rect = event.currentTarget.getBoundingClientRect()
-    return { x: Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)), y: Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height)) }
+    const x = (event.clientX - rect.left) / rect.width
+    const y = (event.clientY - rect.top) / rect.height
+    return { x: Math.min(0.975, Math.max(0.025, x)), y: Math.min(0.975, Math.max(0.025, y)) }
   }
 
   return (

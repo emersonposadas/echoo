@@ -17,6 +17,8 @@ export type Hit = {
   strokeIndex: number
 }
 
+const boundaryMargin = 0.025
+
 const palette = ['#dd5635', '#5a50c8', '#1a8c72', '#e5a13a', '#2e5bbd']
 
 export const defaultComposition: Composition = {
@@ -87,6 +89,11 @@ export function detectHits(strokes: Stroke[], previousX: number, currentX: numbe
     stroke.points.slice(1).forEach((point, segmentIndex) => {
       const start = stroke.points[segmentIndex]
       const end = point
+      const isLeftEdge = start.x <= boundaryMargin && end.x <= boundaryMargin
+      const isRightEdge = start.x >= 1 - boundaryMargin && end.x >= 1 - boundaryMargin
+      const isTopEdge = start.y <= boundaryMargin && end.y <= boundaryMargin
+      const isBottomEdge = start.y >= 1 - boundaryMargin && end.y >= 1 - boundaryMargin
+      if (isLeftEdge || isRightEdge || isTopEdge || isBottomEdge) return
       const minimumX = Math.min(start.x, end.x)
       const maximumX = Math.max(start.x, end.x)
       const crosses = minimumX <= currentX && maximumX >= previousX
