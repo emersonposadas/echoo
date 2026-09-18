@@ -45,9 +45,10 @@ function App() {
       const speed = currentComposition.tempo / 480000
       const nextX = playheadRef.current + delta * speed
       const wrapped = nextX >= 1
-      const from = wrapped ? 0 : lastXRef.current
-      if (wrapped || nextX < lastXRef.current) seenRef.current.clear()
+      const from = lastXRef.current
+      if (nextX < lastXRef.current) seenRef.current.clear()
       const hits = detectHits(currentComposition.strokes, from, wrapped ? 1 : nextX, seenRef.current)
+      if (wrapped) seenRef.current.clear()
       if (hits.length) {
         hits.forEach((hit) => synthRef.current?.play(hit.y))
         setActiveHits(hits.map(({ key, y }) => ({ key, y })))
