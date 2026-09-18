@@ -35,6 +35,21 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
 }
 
+function pointDistance(first: Point, second: Point) {
+  return Math.hypot(second.x - first.x, second.y - first.y)
+}
+
+export function simplifyPoints(points: Point[], minimumDistance = 0.025, maximumPoints = 28) {
+  if (points.length <= 2) return points
+  const simplified = [points[0]]
+  for (const point of points.slice(1, -1)) {
+    if (simplified.length >= maximumPoints - 1) break
+    if (pointDistance(simplified[simplified.length - 1], point) >= minimumDistance) simplified.push(point)
+  }
+  simplified.push(points[points.length - 1])
+  return simplified
+}
+
 function sanitizeComposition(value: unknown): Composition | null {
   if (!value || typeof value !== 'object') return null
   const candidate = value as Partial<Composition>
@@ -49,7 +64,7 @@ function sanitizeComposition(value: unknown): Composition | null {
         ? [{ x: clamp(source.x, 0, 1), y: clamp(source.y, 0, 1) }]
         : []
     })
-    return points.length > 1 ? [{ color, points }] : []
+    return points.length > 1 ? [{ color, points: simplifyPoints(points) }] : []
   })
   return { version: 1, tempo: clamp(typeof candidate.tempo === 'number' ? candidate.tempo : 110, 50, 180), strokes }
 }

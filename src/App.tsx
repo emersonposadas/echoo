@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import DrawingCanvas from './components/DrawingCanvas'
 import Controls from './components/Controls'
-import { compositionFromLocation, compositionUrl, defaultComposition, detectHits, type Composition, type Point } from './model'
+import { compositionFromLocation, compositionUrl, defaultComposition, detectHits, simplifyPoints, type Composition, type Point } from './model'
 import { PianoSynth } from './audio'
 
 const colors = ['#dd5635', '#5a50c8', '#1a8c72', '#e5a13a', '#2e5bbd', '#d05a9b', '#72acd4', '#20211f']
@@ -69,7 +69,7 @@ function App() {
   }, [playing])
 
   const addStroke = (points: Point[]) => {
-    setComposition((current) => ({ ...current, strokes: [...current.strokes, { color, points }] }))
+    setComposition((current) => ({ ...current, strokes: [...current.strokes, { color, points: simplifyPoints(points) }] }))
   }
 
   const togglePlaying = () => {
