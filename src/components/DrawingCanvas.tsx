@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import type { Point, Stroke } from '../model'
 
 type Props = {
@@ -12,6 +12,7 @@ type Props = {
 export default function DrawingCanvas({ strokes, playhead, hits, onStroke, color }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const drawingRef = useRef<Point[]>([])
+  const [draft, setDraft] = useState<Point[]>([])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -41,6 +42,18 @@ export default function DrawingCanvas({ strokes, playhead, hits, onStroke, color
         })
         context.stroke()
       })
+      if (draft.length > 1) {
+        context.strokeStyle = color
+        context.lineWidth = 4
+        context.beginPath()
+        draft.forEach((point, index) => {
+          const x = point.x * rect.width
+          const y = point.y * rect.height
+          if (index === 0) context.moveTo(x, y)
+          else context.lineTo(x, y)
+        })
+        context.stroke()
+      }
       const x = playhead * rect.width
       context.strokeStyle = '#20211f'
       context.lineWidth = 2
@@ -59,7 +72,7 @@ export default function DrawingCanvas({ strokes, playhead, hits, onStroke, color
     const observer = new ResizeObserver(draw)
     observer.observe(container)
     return () => observer.disconnect()
-  }, [strokes, playhead, hits])
+  }, [strokes, playhead, hits, draft, color])
 
   const pointFromEvent = (event: PointerEvent<HTMLCanvasElement>): Point => {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -73,18 +86,20 @@ export default function DrawingCanvas({ strokes, playhead, hits, onStroke, color
       onPointerDown={(event) => {
         event.currentTarget.setPointerCapture(event.pointerId)
         drawingRef.current = [pointFromEvent(event)]
+        setDraft(drawingRef.current)
       }}
       onPointerMove={(event) => {
         if (!drawingRef.current.length) return
         drawingRef.current.push(pointFromEvent(event))
-        onStroke(drawingRef.current)
+        setDraft([...drawingRef.current])
       }}
       onPointerUp={(event) => {
         if (drawingRef.current.length > 1) onStroke(drawingRef.current)
         drawingRef.current = []
+        setDraft([])
         event.currentTarget.releasePointerCapture(event.pointerId)
       }}
-      onPointerCancel={() => { drawingRef.current = [] }}
+      onPointerCancel={() => { drawingRef.current = []; setDraft([]) }}
       style={{ '--ink': color } as CSSProperties}
       aria-label="Musical drawing surface"
     />
