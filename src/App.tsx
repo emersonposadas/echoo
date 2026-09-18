@@ -105,7 +105,7 @@ function App() {
         <div><p className="eyebrow">DRAW / LISTEN / SHARE</p><h1>echoo</h1></div>
         <button className="help-button" aria-label="About echoo">?</button>
       </header>
-      <section className="intro"><div><p className="kicker">A small instrument for gestures</p><h2>Draw a line.<br /><em>Echo a song.</em></h2></div><p className="instructions">The black line plays every note it touches. Try a slow curve, then send the song to someone.</p></section>
+      <section className="intro"><div><p className="kicker">A first echo</p><h2>Press play.<br /><em>Watch it listen.</em></h2></div><p className="instructions">This sketch is already tuned. The moving line turns each crossing into a note.</p></section>
       <section className="workbench">
         <div className="canvas-meta"><span>01 / UNTITLED SKETCH</span><span>{composition.strokes.length} {composition.strokes.length === 1 ? 'line' : 'lines'}</span></div>
         <div className="canvas-frame"><div className="grid-glow" /><DrawingCanvas strokes={composition.strokes} playhead={playhead} hits={activeHits} onStroke={addStroke} color={color} /></div>

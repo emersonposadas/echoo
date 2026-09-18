@@ -47,10 +47,14 @@ body { background: radial-gradient(circle at 8% 8%, #ffe4d6 0, transparent 27%),
 .intro h2 { font-size: clamp(36px, 5.5vw, 62px); }
 .instructions { max-width: 220px; font-size: 12px; }
 .canvas-frame { height: min(60vh, 620px); min-height: 360px; }
+.intro { padding-top: 16px; padding-bottom: 14px; }
+.intro h2 { font-size: clamp(28px, 4vw, 46px); }
+.instructions { max-width: 205px; font-size: 11px; }
 
 @media (max-width: 620px) {
 	.intro { padding: 24px 4% 18px; }
-	.intro h2 { font-size: clamp(34px, 11vw, 52px); }
+	.intro { padding-top: 14px; padding-bottom: 12px; }
+	.intro h2 { font-size: clamp(28px, 9vw, 42px); }
 	.kicker { margin-bottom: 8px; }
 	.instructions { margin-top: 14px; }
 	.canvas-frame { height: min(70vh, 620px); min-height: 400px; }
