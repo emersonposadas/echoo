@@ -25,8 +25,6 @@ No account, database, or server is required. Audio begins only after the user pr
 
 ## GitHub Pages
 
-The included GitHub Actions workflow publishes the `dist` folder to GitHub Pages automatically whenever `main` is updated. No manual workflow run is required: push to GitHub and Actions builds and deploys the site.
-
-In the repository settings, set **Pages > Build and deployment > Source** to **GitHub Actions**. This setting is required once so Pages uses the compiled artifact instead of serving the source `index.html` from the branch.
+The included GitHub Actions workflow builds the app and commits the generated `index.html` and `assets` to `main` automatically whenever `main` is updated. No manual workflow run or Pages source change is required: push to GitHub and the existing branch-based Pages site receives the compiled files.
 
 The Vite base path is configured for this repository at `/echoo/`.
