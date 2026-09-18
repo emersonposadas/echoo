@@ -62,3 +62,18 @@ body { background: radial-gradient(circle at 8% 8%, #ffe4d6 0, transparent 27%),
 	.instructions { margin-top: 14px; }
 	.canvas-frame { height: min(70vh, 620px); min-height: 400px; }
 }
+
+/* Keep the first viewport focused on drawing and controls. */
+.intro { padding-top: 10px; padding-bottom: 10px; }
+.intro h2 { font-size: clamp(24px, 3.2vw, 36px); line-height: 1; }
+.kicker { margin-bottom: 5px; font-size: 9px; }
+.instructions { max-width: 190px; font-size: 10px; line-height: 1.35; }
+.canvas-frame { height: min(54vh, 560px); min-height: 330px; }
+
+@media (max-width: 620px) {
+	.app-shell { padding-top: 12px; }
+	.intro { padding: 8px 4% 10px; }
+	.intro h2 { font-size: clamp(24px, 8vw, 34px); }
+	.instructions { width: 100%; max-width: none; margin-top: 7px; font-size: 10px; }
+	.canvas-frame { height: min(54vh, 480px); min-height: 300px; }
+}
