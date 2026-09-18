@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { CircleHelp } from 'lucide-react'
 import DrawingCanvas from './components/DrawingCanvas'
 import Controls from './components/Controls'
 import { compositionFromLocation, compositionUrl, defaultComposition, detectHits, simplifyPoints, type Composition, type Point } from './model'
@@ -104,7 +105,7 @@ function App() {
       <header className="topbar">
         <div className="brand-mark" aria-hidden="true"><span /><span /><span /></div>
         <div><p className="eyebrow">DRAW / LISTEN / SHARE</p><h1>echoo</h1></div>
-        <button className="help-button" aria-label="About echoo">?</button>
+        <button className="help-button" aria-label="About echoo"><CircleHelp size={19} strokeWidth={2.2} aria-hidden="true" /></button>
       </header>
       <section className="intro"><div><p className="kicker">A first echo</p><h2>Press play.<br /><em>Watch it listen.</em></h2></div><p className="instructions">This sketch is already tuned. The moving line turns each crossing into a note.</p></section>
       <section className="workbench">
