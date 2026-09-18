@@ -12,6 +12,7 @@ function App() {
   const [playhead, setPlayhead] = useState(0)
   const [activeHits, setActiveHits] = useState<{ key: string; y: number }[]>([])
   const [color, setColor] = useState(colors[0])
+  const [eraserMode, setEraserMode] = useState(false)
   const [notice, setNotice] = useState('')
   const synthRef = useRef<PianoSynth | null>(null)
   const compositionRef = useRef(composition)
@@ -108,10 +109,10 @@ function App() {
       <section className="intro"><div><p className="kicker">A first echo</p><h2>Press play.<br /><em>Watch it listen.</em></h2></div><p className="instructions">This sketch is already tuned. The moving line turns each crossing into a note.</p></section>
       <section className="workbench">
         <div className="canvas-meta"><span>01 / UNTITLED SKETCH</span><span>{composition.strokes.length} {composition.strokes.length === 1 ? 'line' : 'lines'}</span></div>
-        <div className="canvas-frame"><div className="grid-glow" /><DrawingCanvas strokes={composition.strokes} playhead={playhead} hits={activeHits} onStroke={addStroke} color={color} /></div>
+        <div className="canvas-frame"><div className="grid-glow" /><DrawingCanvas strokes={composition.strokes} playhead={playhead} hits={activeHits} onStroke={addStroke} onEraseStroke={(index) => { if (index >= 0) setComposition((current) => ({ ...current, strokes: current.strokes.filter((_, strokeIndex) => strokeIndex !== index) })) }} color={color} eraserMode={eraserMode} /></div>
         <div className="canvas-caption"><span>Every crossing becomes a note</span><span className={playing ? 'live' : ''}>{playing ? 'LISTENING' : 'READY'} <i /></span></div>
       </section>
-      <Controls playing={playing} tempo={composition.tempo} color={color} onToggle={togglePlaying} onUndo={() => setComposition((current) => ({ ...current, strokes: current.strokes.slice(0, -1) }))} onClear={() => { setPlaying(false); setComposition((current) => ({ ...current, strokes: [] })) }} onShare={share} onTempo={(tempo) => setComposition((current) => ({ ...current, tempo }))} onColor={setColor} />
+      <Controls playing={playing} tempo={composition.tempo} color={color} eraserMode={eraserMode} onToggle={togglePlaying} onUndo={() => setComposition((current) => ({ ...current, strokes: current.strokes.slice(0, -1) }))} onClear={() => { setPlaying(false); setComposition((current) => ({ ...current, strokes: [] })) }} onShare={share} onTempo={(tempo) => setComposition((current) => ({ ...current, tempo }))} onColor={(nextColor) => { setColor(nextColor); setEraserMode(false) }} onEraser={() => setEraserMode((current) => !current)} />
       <footer><span>made for quiet ideas</span><span>echoo / 2026</span></footer>
       {notice && <div className="notice" role="status">{notice}</div>}
     </main>

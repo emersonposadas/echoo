@@ -37,6 +37,7 @@ body { background: radial-gradient(circle at 8% 8%, #ffe4d6 0, transparent 27%),
 .canvas-frame { border: 2px solid #17203b; border-radius: 16px; background-color: #f8fbff; background-image: linear-gradient(#dbe7f6 1px, transparent 1px), linear-gradient(90deg, #dbe7f6 1px, transparent 1px), linear-gradient(#b9cfee 1px, transparent 1px), linear-gradient(90deg, #b9cfee 1px, transparent 1px); background-size: 26px 26px, 26px 26px, 130px 130px, 130px 130px; }
 .round-button { border: 2px solid #17203b; border-radius: 15px; background: #fffdf9; color: #17203b; }
 .round-button.dark { background: #17203b; border-color: #17203b; box-shadow: 3px 3px 0 #e34f3f; }
+.eraser-button.active { background: #f8c7db; color: #17203b; border-color: #e34f3f; box-shadow: 3px 3px 0 #e34f3f; }
 .share-button { border: 2px solid #17203b; border-radius: 12px; background: #e34f3f; box-shadow: 3px 3px 0 #17203b; }
 .tempo-control { color: #526080; }.tempo-control input { accent-color: #5c50d7; }.tempo-control strong { color: #17203b; font-weight: 700; }
 .color-dot { width: 22px; height: 22px; border: 2px solid #17203b; border-radius: 8px; transform: rotate(-5deg); }.color-dot:nth-child(even) { transform: rotate(5deg); }.color-dot.selected { outline-color: #e34f3f; }

@@ -6,10 +6,37 @@ type Props = {
   playhead: number
   hits: { key: string; y: number }[]
   onStroke: (points: Point[]) => void
+  onEraseStroke: (index: number) => void
   color: string
+  eraserMode: boolean
 }
 
-export default function DrawingCanvas({ strokes, playhead, hits, onStroke, color }: Props) {
+function distanceToSegment(point: Point, start: Point, end: Point) {
+  const dx = end.x - start.x
+  const dy = end.y - start.y
+  const lengthSquared = dx * dx + dy * dy
+  const projection = lengthSquared === 0 ? 0 : Math.min(1, Math.max(0, ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSquared))
+  const closestX = start.x + projection * dx
+  const closestY = start.y + projection * dy
+  return Math.hypot(point.x - closestX, point.y - closestY)
+}
+
+function strokeAtPoint(strokes: Stroke[], point: Point) {
+  let nearestIndex = -1
+  let nearestDistance = 0.04
+  strokes.forEach((stroke, strokeIndex) => {
+    stroke.points.slice(1).forEach((end, segmentIndex) => {
+      const distance = distanceToSegment(point, stroke.points[segmentIndex], end)
+      if (distance < nearestDistance) {
+        nearestDistance = distance
+        nearestIndex = strokeIndex
+      }
+    })
+  })
+  return nearestIndex
+}
+
+export default function DrawingCanvas({ strokes, playhead, hits, onStroke, onEraseStroke, color, eraserMode }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const drawingRef = useRef<Point[]>([])
   const [draft, setDraft] = useState<Point[]>([])
@@ -86,8 +113,13 @@ export default function DrawingCanvas({ strokes, playhead, hits, onStroke, color
       ref={canvasRef}
       className="drawing-canvas"
       onPointerDown={(event) => {
+        const point = pointFromEvent(event)
+        if (eraserMode) {
+          onEraseStroke(strokeAtPoint(strokes, point))
+          return
+        }
         event.currentTarget.setPointerCapture(event.pointerId)
-        drawingRef.current = [pointFromEvent(event)]
+        drawingRef.current = [point]
         setDraft(drawingRef.current)
       }}
       onPointerMove={(event) => {
@@ -96,10 +128,11 @@ export default function DrawingCanvas({ strokes, playhead, hits, onStroke, color
         setDraft([...drawingRef.current])
       }}
       onPointerUp={(event) => {
+        const wasDrawing = drawingRef.current.length > 0
         if (drawingRef.current.length > 1) onStroke(drawingRef.current)
         drawingRef.current = []
         setDraft([])
-        event.currentTarget.releasePointerCapture(event.pointerId)
+        if (wasDrawing) event.currentTarget.releasePointerCapture(event.pointerId)
       }}
       onPointerCancel={() => { drawingRef.current = []; setDraft([]) }}
       style={{ '--ink': color } as CSSProperties}
