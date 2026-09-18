@@ -41,3 +41,17 @@ body { background: radial-gradient(circle at 8% 8%, #ffe4d6 0, transparent 27%),
 .tempo-control { color: #526080; }.tempo-control input { accent-color: #5c50d7; }.tempo-control strong { color: #17203b; font-weight: 700; }
 .color-dot { width: 22px; height: 22px; border: 2px solid #17203b; border-radius: 8px; transform: rotate(-5deg); }.color-dot:nth-child(even) { transform: rotate(5deg); }.color-dot.selected { outline-color: #e34f3f; }
 .notice { border: 2px solid #17203b; background: #f8c7db; color: #17203b; font-weight: 700; }
+
+/* Give the drawing surface priority in the first viewport. */
+.intro { padding-top: clamp(24px, 4vw, 46px); padding-bottom: 22px; }
+.intro h2 { font-size: clamp(36px, 5.5vw, 62px); }
+.instructions { max-width: 220px; font-size: 12px; }
+.canvas-frame { height: min(60vh, 620px); min-height: 360px; }
+
+@media (max-width: 620px) {
+	.intro { padding: 24px 4% 18px; }
+	.intro h2 { font-size: clamp(34px, 11vw, 52px); }
+	.kicker { margin-bottom: 8px; }
+	.instructions { margin-top: 14px; }
+	.canvas-frame { height: min(70vh, 620px); min-height: 400px; }
+}
