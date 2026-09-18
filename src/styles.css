@@ -22,3 +22,22 @@ button { border: 0; cursor: pointer; }
 .controls { padding: 21px 3% 8px; }.control-row { display: flex; align-items: center; gap: 10px; }.round-button { width: 43px; height: 43px; border: 1px solid #c8c3b8; border-radius: 50%; background: #f6f3ec; color: #242522; font-size: 20px; }.round-button.dark { background: #20211f; color: white; border-color: #20211f; font-size: 14px; }.share-button { display: flex; align-items: center; gap: 8px; margin-left: 8px; padding: 11px 16px; border-radius: 9px; background: #20211f; color: white; font-size: 12px; font-weight: 700; }.share-button span { font-size: 18px; line-height: 0; }.tempo-control { display: flex; align-items: center; gap: 11px; margin-left: auto; color: #77756e; }.tempo-control input { width: 120px; accent-color: #dd5635; }.tempo-control strong { color: #20211f; font-weight: 500; font-size: 12px; }.palette { padding-top: 18px; gap: 13px; }.color-dot { width: 20px; height: 20px; border-radius: 50%; outline: 2px solid transparent; outline-offset: 3px; }.color-dot.selected { outline-color: #20211f; }
 footer { display: flex; justify-content: space-between; margin-top: auto; padding: 32px 3% 0; color: #969187; font-size: 9px; }.notice { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); padding: 10px 15px; border-radius: 20px; background: #20211f; color: white; font-size: 12px; box-shadow: 0 8px 25px #20211f30; }
 @media (max-width: 620px) { .app-shell { padding: 19px 13px 18px; }.intro { display: block; padding: 46px 4% 27px; }.intro h2 { font-size: clamp(40px, 13vw, 58px); }.instructions { width: 90%; margin-top: 22px; }.workbench { padding: 10px; border-radius: 17px; }.canvas-frame { height: 112vw; min-height: 360px; max-height: 580px; }.controls { padding: 18px 2% 5px; }.control-row.primary-controls { flex-wrap: wrap; }.share-button { margin-left: auto; }.tempo-control { width: 100%; justify-content: space-between; margin: 9px 0 0; }.tempo-control input { flex: 1; }.palette { gap: 14px; justify-content: space-between; }.color-dot { width: 22px; height: 22px; } }
+
+/* Bright, sticker-like accents keep the instrument playful on small screens. */
+:root { color: #17203b; }
+body { background: radial-gradient(circle at 8% 8%, #ffe4d6 0, transparent 27%), radial-gradient(circle at 92% 28%, #d8f6ed 0, transparent 30%), #f1efff; }
+.topbar h1 { font-family: 'Manrope', sans-serif; font-weight: 700; color: #17203b; }
+.help-button { width: 36px; height: 36px; border: 2px solid #17203b; border-radius: 13px; color: #17203b; background: #f8c7db; transform: rotate(4deg); }
+.kicker { color: #e34f3f; font-weight: 700; }
+.intro h2 { font-family: 'Manrope', sans-serif; font-weight: 700; letter-spacing: -.075em; color: #17203b; }
+.intro h2 em { color: #5c50d7; }
+.instructions { color: #526080; }
+.workbench { background: #fffdf9; border: 2px solid #17203b; border-radius: 24px; box-shadow: 8px 9px 0 #c8c1f4; }
+.canvas-meta, .canvas-caption { color: #697292; }
+.canvas-frame { border: 2px solid #17203b; border-radius: 16px; background-color: #f8fbff; background-image: linear-gradient(#dbe7f6 1px, transparent 1px), linear-gradient(90deg, #dbe7f6 1px, transparent 1px), linear-gradient(#b9cfee 1px, transparent 1px), linear-gradient(90deg, #b9cfee 1px, transparent 1px); background-size: 26px 26px, 26px 26px, 130px 130px, 130px 130px; }
+.round-button { border: 2px solid #17203b; border-radius: 15px; background: #fffdf9; color: #17203b; }
+.round-button.dark { background: #17203b; border-color: #17203b; box-shadow: 3px 3px 0 #e34f3f; }
+.share-button { border: 2px solid #17203b; border-radius: 12px; background: #e34f3f; box-shadow: 3px 3px 0 #17203b; }
+.tempo-control { color: #526080; }.tempo-control input { accent-color: #5c50d7; }.tempo-control strong { color: #17203b; font-weight: 700; }
+.color-dot { width: 22px; height: 22px; border: 2px solid #17203b; border-radius: 8px; transform: rotate(-5deg); }.color-dot:nth-child(even) { transform: rotate(5deg); }.color-dot.selected { outline-color: #e34f3f; }
+.notice { border: 2px solid #17203b; background: #f8c7db; color: #17203b; font-weight: 700; }

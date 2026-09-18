@@ -14,10 +14,16 @@ function App() {
   const [color, setColor] = useState(colors[0])
   const [notice, setNotice] = useState('')
   const synthRef = useRef<PianoSynth | null>(null)
+  const compositionRef = useRef(composition)
   const playheadRef = useRef(0)
   const lastXRef = useRef(0)
   const seenRef = useRef(new Set<string>())
   const frameRef = useRef<number | null>(null)
+  const hitTimeoutRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    compositionRef.current = composition
+  }, [composition])
 
   useEffect(() => {
     const timeout = window.setTimeout(() => window.history.replaceState(null, '', compositionUrl(composition)), 250)
@@ -33,18 +39,20 @@ function App() {
     void synthRef.current.resume()
     let previousTime = performance.now()
     const tick = (time: number) => {
-      const delta = time - previousTime
+      const delta = Math.min(time - previousTime, 80)
       previousTime = time
-      const speed = composition.tempo / 60000
+      const currentComposition = compositionRef.current
+      const speed = currentComposition.tempo / 480000
       const nextX = playheadRef.current + delta * speed
       const wrapped = nextX >= 1
       const from = wrapped ? 0 : lastXRef.current
       if (wrapped) seenRef.current.clear()
-      const hits = detectHits(composition.strokes, from, wrapped ? 1 : nextX, seenRef.current)
+      const hits = detectHits(currentComposition.strokes, from, wrapped ? 1 : nextX, seenRef.current)
       if (hits.length) {
         hits.forEach((hit) => synthRef.current?.play(hit.y))
         setActiveHits(hits.map(({ key, y }) => ({ key, y })))
-        window.setTimeout(() => setActiveHits([]), 170)
+        if (hitTimeoutRef.current) window.clearTimeout(hitTimeoutRef.current)
+        hitTimeoutRef.current = window.setTimeout(() => setActiveHits([]), 240)
       }
       lastXRef.current = wrapped ? 0 : nextX
       playheadRef.current = wrapped ? 0 : nextX
@@ -52,8 +60,11 @@ function App() {
       frameRef.current = requestAnimationFrame(tick)
     }
     frameRef.current = requestAnimationFrame(tick)
-    return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current) }
-  }, [playing, composition])
+    return () => {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current)
+      if (hitTimeoutRef.current) window.clearTimeout(hitTimeoutRef.current)
+    }
+  }, [playing])
 
   const addStroke = (points: Point[]) => {
     setComposition((current) => ({ ...current, strokes: [...current.strokes, { color, points }] }))
@@ -65,7 +76,10 @@ function App() {
       playheadRef.current = playhead
       seenRef.current.clear()
       setPlaying(true)
-    } else setPlaying(false)
+    } else {
+      setPlaying(false)
+      setActiveHits([])
+    }
   }
 
   const share = async () => {

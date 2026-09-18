@@ -21,7 +21,7 @@ const palette = ['#dd5635', '#5a50c8', '#1a8c72', '#e5a13a', '#2e5bbd']
 
 export const defaultComposition: Composition = {
   version: 1,
-  tempo: 90,
+  tempo: 56,
   strokes: [
     { color: '#dd5635', points: [{ x: 0.1, y: 0.61 }, { x: 0.18, y: 0.54 }, { x: 0.27, y: 0.58 }, { x: 0.36, y: 0.45 }, { x: 0.47, y: 0.5 }, { x: 0.56, y: 0.36 }, { x: 0.67, y: 0.41 }, { x: 0.78, y: 0.28 }, { x: 0.9, y: 0.35 }] },
     { color: '#5a50c8', points: [{ x: 0.08, y: 0.32 }, { x: 0.19, y: 0.26 }, { x: 0.3, y: 0.3 }, { x: 0.41, y: 0.2 }, { x: 0.52, y: 0.25 }, { x: 0.64, y: 0.15 }, { x: 0.78, y: 0.2 }, { x: 0.92, y: 0.11 }] },
@@ -48,7 +48,7 @@ function sanitizeComposition(value: unknown): Composition | null {
     })
     return points.length > 1 ? [{ color, points }] : []
   })
-  return { version: 1, tempo: clamp(typeof candidate.tempo === 'number' ? candidate.tempo : 90, 50, 140), strokes }
+  return { version: 1, tempo: clamp(typeof candidate.tempo === 'number' ? candidate.tempo : 56, 40, 120), strokes }
 }
 
 export function encodeComposition(composition: Composition) {
@@ -87,12 +87,15 @@ export function detectHits(strokes: Stroke[], previousX: number, currentX: numbe
     stroke.points.slice(1).forEach((point, segmentIndex) => {
       const start = stroke.points[segmentIndex]
       const end = point
-      const crosses = start.x <= currentX && end.x >= previousX && end.x >= start.x
+      const minimumX = Math.min(start.x, end.x)
+      const maximumX = Math.max(start.x, end.x)
+      const crosses = minimumX <= currentX && maximumX >= previousX
       if (!crosses) return
       const key = `${strokeIndex}:${segmentIndex}`
       if (seen.has(key)) return
       const span = end.x - start.x
-      const ratio = span === 0 ? 0 : clamp((currentX - start.x) / span, 0, 1)
+      const crossingX = clamp(Math.max(previousX, minimumX), minimumX, maximumX)
+      const ratio = span === 0 ? 0 : clamp((crossingX - start.x) / span, 0, 1)
       seen.add(key)
       hits.push({ key, y: start.y + (end.y - start.y) * ratio, strokeIndex })
     })
