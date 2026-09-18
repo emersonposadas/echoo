@@ -18,7 +18,7 @@ export class AmbientSynth {
     const filter = context.createBiquadFilter()
     input.gain.value = 0.34
     delay.delayTime.value = 0.42
-    feedback.gain.value = 0.28
+    feedback.gain.value = 0.24
     filter.type = 'lowpass'
     filter.frequency.value = 1900
     input.connect(delay)
@@ -54,8 +54,8 @@ export class AmbientSynth {
     filter.Q.value = 0.5
     output.gain.setValueAtTime(0.0001, now)
     output.gain.linearRampToValueAtTime(0.11, now + 0.12)
-    output.gain.setValueAtTime(0.085, now + 1.2)
-    output.gain.exponentialRampToValueAtTime(0.0001, now + 2.8)
+    output.gain.setValueAtTime(0.085, now + 1.05)
+    output.gain.exponentialRampToValueAtTime(0.0001, now + 2.4)
     fundamental.connect(filter)
     overtone.connect(filter)
     filter.connect(output)
@@ -63,7 +63,7 @@ export class AmbientSynth {
     output.connect(ambience.input)
     fundamental.start(now)
     overtone.start(now)
-    fundamental.stop(now + 2.85)
-    overtone.stop(now + 2.85)
+    fundamental.stop(now + 2.45)
+    overtone.stop(now + 2.45)
   }
 }
