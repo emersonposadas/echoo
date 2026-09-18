@@ -1,0 +1,92 @@
+import { useEffect, useRef, type CSSProperties, type PointerEvent } from 'react'
+import type { Point, Stroke } from '../model'
+
+type Props = {
+  strokes: Stroke[]
+  playhead: number
+  hits: { key: string; y: number }[]
+  onStroke: (points: Point[]) => void
+  color: string
+}
+
+export default function DrawingCanvas({ strokes, playhead, hits, onStroke, color }: Props) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const drawingRef = useRef<Point[]>([])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const container = canvas.parentElement
+    if (!container) return
+    const draw = () => {
+      const rect = container.getBoundingClientRect()
+      const ratio = window.devicePixelRatio || 1
+      canvas.width = rect.width * ratio
+      canvas.height = rect.height * ratio
+      const context = canvas.getContext('2d')
+      if (!context) return
+      context.setTransform(ratio, 0, 0, ratio, 0, 0)
+      context.clearRect(0, 0, rect.width, rect.height)
+      context.lineCap = 'round'
+      context.lineJoin = 'round'
+      strokes.forEach((stroke) => {
+        context.strokeStyle = stroke.color
+        context.lineWidth = 4
+        context.beginPath()
+        stroke.points.forEach((point, index) => {
+          const x = point.x * rect.width
+          const y = point.y * rect.height
+          if (index === 0) context.moveTo(x, y)
+          else context.lineTo(x, y)
+        })
+        context.stroke()
+      })
+      const x = playhead * rect.width
+      context.strokeStyle = '#20211f'
+      context.lineWidth = 2
+      context.beginPath()
+      context.moveTo(x, 0)
+      context.lineTo(x, rect.height)
+      context.stroke()
+      hits.forEach((hit) => {
+        context.fillStyle = '#20211f'
+        context.beginPath()
+        context.arc(x, hit.y * rect.height, 6, 0, Math.PI * 2)
+        context.fill()
+      })
+    }
+    draw()
+    const observer = new ResizeObserver(draw)
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [strokes, playhead, hits])
+
+  const pointFromEvent = (event: PointerEvent<HTMLCanvasElement>): Point => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    return { x: Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)), y: Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height)) }
+  }
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="drawing-canvas"
+      onPointerDown={(event) => {
+        event.currentTarget.setPointerCapture(event.pointerId)
+        drawingRef.current = [pointFromEvent(event)]
+      }}
+      onPointerMove={(event) => {
+        if (!drawingRef.current.length) return
+        drawingRef.current.push(pointFromEvent(event))
+        onStroke(drawingRef.current)
+      }}
+      onPointerUp={(event) => {
+        if (drawingRef.current.length > 1) onStroke(drawingRef.current)
+        drawingRef.current = []
+        event.currentTarget.releasePointerCapture(event.pointerId)
+      }}
+      onPointerCancel={() => { drawingRef.current = [] }}
+      style={{ '--ink': color } as CSSProperties}
+      aria-label="Musical drawing surface"
+    />
+  )
+}

@@ -1,0 +1,106 @@
+import { useEffect, useRef, useState } from 'react'
+import DrawingCanvas from './components/DrawingCanvas'
+import Controls from './components/Controls'
+import { compositionFromLocation, compositionUrl, defaultComposition, detectHits, type Composition, type Point } from './model'
+import { PianoSynth } from './audio'
+
+const colors = ['#dd5635', '#5a50c8', '#1a8c72', '#e5a13a', '#2e5bbd', '#d05a9b', '#72acd4', '#20211f']
+
+function App() {
+  const [composition, setComposition] = useState<Composition>(() => compositionFromLocation() ?? defaultComposition)
+  const [playing, setPlaying] = useState(false)
+  const [playhead, setPlayhead] = useState(0)
+  const [activeHits, setActiveHits] = useState<{ key: string; y: number }[]>([])
+  const [color, setColor] = useState(colors[0])
+  const [notice, setNotice] = useState('')
+  const synthRef = useRef<PianoSynth | null>(null)
+  const playheadRef = useRef(0)
+  const lastXRef = useRef(0)
+  const seenRef = useRef(new Set<string>())
+  const frameRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => window.history.replaceState(null, '', compositionUrl(composition)), 250)
+    return () => window.clearTimeout(timeout)
+  }, [composition])
+
+  useEffect(() => {
+    if (!playing) {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current)
+      return
+    }
+    synthRef.current ??= new PianoSynth()
+    void synthRef.current.resume()
+    let previousTime = performance.now()
+    const tick = (time: number) => {
+      const delta = time - previousTime
+      previousTime = time
+      const speed = composition.tempo / 60000
+      const nextX = playheadRef.current + delta * speed
+      const wrapped = nextX >= 1
+      const from = wrapped ? 0 : lastXRef.current
+      if (wrapped) seenRef.current.clear()
+      const hits = detectHits(composition.strokes, from, wrapped ? 1 : nextX, seenRef.current)
+      if (hits.length) {
+        hits.forEach((hit) => synthRef.current?.play(hit.y))
+        setActiveHits(hits.map(({ key, y }) => ({ key, y })))
+        window.setTimeout(() => setActiveHits([]), 170)
+      }
+      lastXRef.current = wrapped ? 0 : nextX
+      playheadRef.current = wrapped ? 0 : nextX
+      setPlayhead(wrapped ? 0 : nextX)
+      frameRef.current = requestAnimationFrame(tick)
+    }
+    frameRef.current = requestAnimationFrame(tick)
+    return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current) }
+  }, [playing, composition])
+
+  const addStroke = (points: Point[]) => {
+    setComposition((current) => ({ ...current, strokes: [...current.strokes, { color, points }] }))
+  }
+
+  const togglePlaying = () => {
+    if (!playing) {
+      lastXRef.current = playhead
+      playheadRef.current = playhead
+      seenRef.current.clear()
+      setPlaying(true)
+    } else setPlaying(false)
+  }
+
+  const share = async () => {
+    const url = compositionUrl(composition)
+    try {
+      if (navigator.share) await navigator.share({ title: 'My echoo song', text: 'Listen to this drawing', url })
+      else {
+        await navigator.clipboard.writeText(url)
+        setNotice('Link copied')
+        window.setTimeout(() => setNotice(''), 2200)
+      }
+    } catch {
+      setNotice('Sharing cancelled')
+      window.setTimeout(() => setNotice(''), 2200)
+    }
+  }
+
+  return (
+    <main className="app-shell">
+      <header className="topbar">
+        <div className="brand-mark" aria-hidden="true"><span /><span /><span /></div>
+        <div><p className="eyebrow">DRAW / LISTEN / SHARE</p><h1>echoo</h1></div>
+        <button className="help-button" aria-label="About echoo">?</button>
+      </header>
+      <section className="intro"><div><p className="kicker">A small instrument for gestures</p><h2>Draw a line.<br /><em>Echo a song.</em></h2></div><p className="instructions">The black line plays every note it touches. Try a slow curve, then send the song to someone.</p></section>
+      <section className="workbench">
+        <div className="canvas-meta"><span>01 / UNTITLED SKETCH</span><span>{composition.strokes.length} {composition.strokes.length === 1 ? 'line' : 'lines'}</span></div>
+        <div className="canvas-frame"><div className="grid-glow" /><DrawingCanvas strokes={composition.strokes} playhead={playhead} hits={activeHits} onStroke={addStroke} color={color} /></div>
+        <div className="canvas-caption"><span>Every crossing becomes a note</span><span className={playing ? 'live' : ''}>{playing ? 'LISTENING' : 'READY'} <i /></span></div>
+      </section>
+      <Controls playing={playing} tempo={composition.tempo} color={color} onToggle={togglePlaying} onUndo={() => setComposition((current) => ({ ...current, strokes: current.strokes.slice(0, -1) }))} onClear={() => { setPlaying(false); setComposition((current) => ({ ...current, strokes: [] })) }} onShare={share} onTempo={(tempo) => setComposition((current) => ({ ...current, tempo }))} onColor={setColor} />
+      <footer><span>made for quiet ideas</span><span>echoo / 2026</span></footer>
+      {notice && <div className="notice" role="status">{notice}</div>}
+    </main>
+  )
+}
+
+export default App
