@@ -3,7 +3,7 @@ import { CircleHelp } from 'lucide-react'
 import DrawingCanvas from './components/DrawingCanvas'
 import Controls from './components/Controls'
 import { compositionFromLocation, compositionUrl, defaultComposition, detectHits, simplifyPoints, type Composition, type Point } from './model'
-import { PianoSynth } from './audio'
+import { AmbientSynth } from './audio'
 
 const colors = ['#dd5635', '#5a50c8', '#1a8c72', '#e5a13a', '#2e5bbd', '#d05a9b', '#72acd4', '#20211f']
 
@@ -15,7 +15,7 @@ function App() {
   const [color, setColor] = useState(colors[0])
   const [eraserMode, setEraserMode] = useState(false)
   const [notice, setNotice] = useState('')
-  const synthRef = useRef<PianoSynth | null>(null)
+  const synthRef = useRef<AmbientSynth | null>(null)
   const compositionRef = useRef(composition)
   const playheadRef = useRef(0)
   const lastXRef = useRef(0)
@@ -37,7 +37,7 @@ function App() {
       if (frameRef.current) cancelAnimationFrame(frameRef.current)
       return
     }
-    synthRef.current ??= new PianoSynth()
+    synthRef.current ??= new AmbientSynth()
     void synthRef.current.resume()
     let previousTime = performance.now()
     const tick = (time: number) => {
